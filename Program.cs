@@ -30,3 +30,10 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+
+
+
+/*
+        CREATE, READ, UPDATE, DELETE ==>  CRUD
+        dotnet aspnet-codegenerator razorpage -m razorwebapp_sql.Models.Article -dc razor08.efcore.Data.ArticleContext -outDir Pages/Blog -udl --referenceScriptLibraries
+*/

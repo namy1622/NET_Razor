@@ -1,0 +1,43 @@
+@page "/xemblog/{id:int}"
+@model razorwebapp_sql.Pages_Movies.DetailsModel
+
+@{
+    ViewData["Title"] = @Model.Article.Title;
+}
+
+<h1>@Model.Article.Title</h1>
+
+<p><i>@Html.DisplayFor(model => model.Article.PublishDate)</i></p>
+<hr>
+@Html.DisplayFor(model=> model.Article.Content)
+
+<hr>
+
+@* <div>
+    <h4>Article</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Article.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Article.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Article.PublishDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Article.PublishDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Article.Content)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Article.Content)
+        </dd>
+    </dl>
+</div> *@
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Article.ID">Sửa</a> |
+    <a asp-page="./Index">Danh sách bài viết</a>
+</div>

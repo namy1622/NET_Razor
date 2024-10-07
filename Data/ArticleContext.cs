@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using razorwebapp_sql.Models;
 
 namespace razor08.efcore.Data
+//  razor08.efcore.Data.ArticleContext
 {
     public class ArticleContext : DbContext
     {
