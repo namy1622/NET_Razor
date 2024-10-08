@@ -34,8 +34,8 @@ builder.Services.AddDbContext<ArticleContext>(options =>
 
 
 builder.Services.AddDefaultIdentity<AppUser>()
-        .AddEntityFrameworkStores<ArticleContext>();
-       // .AddDefaultTokenProviders();
+        .AddEntityFrameworkStores<ArticleContext>()
+       .AddDefaultTokenProviders();
 
        
 
