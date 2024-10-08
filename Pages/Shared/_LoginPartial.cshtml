@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Identity
+@using razorwebapp_sql.Models
+@* <span class="badge badge-danger">Day la Login Partial</span> *@
+
+@* inject dich vu để kiểm tra tài khoản đang trong trạng thái nào( đặng nhập, đăng xuất) *@
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+
+@{
+    @*
+SignInManager.IsSignedIn(User) // kiểm tra user đã đăng nhập hay chưa(true/false)
+UserManager.GetUserName(User) // đọc các tt user đã đăng nhập
+*@
+}
+
+<ul class="navbar-nav">
+    @* nếu đã đăng nhập *@
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a asp-page="/Account/Manage/Index" asp-area="Identity" class="nav-link text-dark">
+                Xin chào @UserManager.GetUserName(User)!
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-page="/Account/Logout" asp-area="Identity" class="nav-link text-dark">Đăng xuất</a>
+        </li>
+    }
+    else // nếu chưa đăng nhập
+    {// hiển thị Iem DK DN
+        <li class="nav-item">
+            <a asp-page="/Account/Register" asp-area="Identity" class="nav-link text-dark">Đăng kí</a>
+        </li>
+        <li class="nav-item">
+            <a asp-page="/Account/Login" asp-area="Identity" class="nav-link text-dark">Đăng nhập</a>
+        </li>
+    }
+</ul>
+
+
+
+@* using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity; *@
