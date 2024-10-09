@@ -20,24 +20,20 @@ builder.Services.AddSingleton<IEmailSender, SendMailService>();
 builder.Services.AddDbContext<ArticleContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("ProductionMovieContext")));
 
-// Dang ki Identity
-// builder.Services.AddIdentity<AppUser, IdentityRole>()
-//         .AddEntityFrameworkStores<ArticleContext>()
-//         .AddDefaultTokenProviders();
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ArticleContext>();
 
-// Microsoft.Extensions.DependencyInjection.IdentityServiceCollectionExtensions
-//     .AddIdentity<AppUser, IdentityRole>(builder.Services)
-//     .AddEntityFrameworkStores<ArticleContext>()
-//     .AddDefaultTokenProviders();
+// Dang ki Identity
 
 //-----------------------------
 
 
-builder.Services.AddDefaultIdentity<AppUser>()
-        .AddEntityFrameworkStores<ArticleContext>()
-       .AddDefaultTokenProviders();
+// builder.Services.AddDefaultIdentity<AppUser>()
+//         .AddEntityFrameworkStores<ArticleContext>()
+//        .AddDefaultTokenProviders();
 
-       
+   builder.Services.AddIdentity<AppUser, IdentityRole>()
+        .AddEntityFrameworkStores<ArticleContext>()
+        .AddDefaultTokenProviders();    
 
 //****************************************************
 //-------------------------------------------------------
@@ -116,11 +112,7 @@ app.Run();
 
          dotnet aspnet-codegenerator identity -dc razor08.efcore.Data.ArticleContext
 
-         Microsoft.AspNetCore.Identity.IdentityBuilderExtensions.AddDefaultTokenProviders
-         Microsoft.AspNetCore.Identity.IdentityBuilderExtensions.AddDefaultTokenProviders
-
-         Microsoft.AspNetCore.Identity.IdentityBuilder
-         Microsoft.AspNetCore.Identity.IdentityBuilder
+        
 */
 
 

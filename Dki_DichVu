@@ -1,0 +1,8 @@
+// builder.Services.AddIdentity<AppUser, IdentityRole>()
+//         .AddEntityFrameworkStores<ArticleContext>()
+//         .AddDefaultTokenProviders();
+
+// Microsoft.Extensions.DependencyInjection.IdentityServiceCollectionExtensions
+//     .AddIdentity<AppUser, IdentityRole>(builder.Services)
+//     .AddEntityFrameworkStores<ArticleContext>()
+//     .AddDefaultTokenProviders();
