@@ -20,7 +20,7 @@ builder.Services.AddSingleton<IEmailSender, SendMailService>();
 builder.Services.AddDbContext<ArticleContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("ProductionMovieContext")));
 
-builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ArticleContext>();
+// builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ArticleContext>();
 
 // Dang ki Identity
 
@@ -66,6 +66,11 @@ builder.Services.Configure<IdentityOptions> (options => {
 //-------------------------------------------------------
 //**********************************************************
 
+builder.Services.ConfigureApplicationCookie(options =>{
+        options.LoginPath ="/login/";
+        options.LogoutPath = "/logout/";
+        options.AccessDeniedPath = "/khongduoctruycap.html";
+});
 
 var app = builder.Build();
 
