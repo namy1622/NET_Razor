@@ -28,25 +28,15 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Phải nhập {0}!")]
+            [EmailAddress(ErrorMessage =("Sai định dạng!"))]
             public string Email { get; set; }
         }
 
@@ -74,7 +64,7 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
                 await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    $"Bấm vào <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'đây để đặt lại mật khẩu! here</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

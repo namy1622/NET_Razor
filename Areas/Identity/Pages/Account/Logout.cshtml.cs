@@ -34,9 +34,12 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             }
             else
             {
+                returnUrl  = Url.Content("~/"); // sau khi dang xuat chuyen ve trang chu luon
+                return LocalRedirect(returnUrl);
+
                 // This needs to be a redirect so that the browser performs a new
                 // request and the identity for the user gets updated.
-                return RedirectToPage();
+                // return RedirectToPage();
             }
         }
     }
