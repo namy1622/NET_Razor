@@ -8,5 +8,9 @@ namespace razorwebapp_sql.Models{
         [StringLength(400)]
         public string? HomeAddress {set; get;}
 
+       // [Required]
+        [DataType(DataType.Date)]
+        public DateTime? BirthDate {get; set;}
+
     }
 }

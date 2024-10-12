@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ using razorwebapp_sql.Models;
 
 namespace razorwebapp_sql.Areas.Identity.Pages.Account.Manage
 {
+    [Authorize]
     public class EmailModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -32,45 +34,27 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account.Manage
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         public string Email { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         public bool IsEmailConfirmed { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+       
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            
             [Required]
             [EmailAddress]
-            [Display(Name = "New email")]
+            [Display(Name = "Email mới")]
             public string NewEmail { get; set; }
         }
 
@@ -114,6 +98,7 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account.Manage
             }
 
             var email = await _userManager.GetEmailAsync(user);
+
             if (Input.NewEmail != email)
             {
                 var userId = await _userManager.GetUserIdAsync(user);
@@ -126,10 +111,10 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Xác nhận Email của bạn",
+                    $"Bấm vào <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>để đổi Email</a>.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Hãy mở hòm thư của Email mới để xác nhận.";
                 return RedirectToPage();
             }
 
