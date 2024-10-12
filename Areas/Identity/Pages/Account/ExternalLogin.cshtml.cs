@@ -46,42 +46,23 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public string ProviderDisplayName { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public string ReturnUrl { get; set; }
+                public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [TempData]
+        
+        [TempData] // thiết lập lưu giá trị vào session 
         public string ErrorMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+           
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -93,22 +74,29 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
         {
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+           
             return new ChallengeResult(provider, properties);
         }
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
+
+           // return Content("Dung lai o day");
+
             returnUrl = returnUrl ?? Url.Content("~/");
-            if (remoteError != null)
-            {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+
+            if (remoteError != null) // dv ngoaif có kèm lỗi
+            {  // --> chuyển hướng về Login
+                ErrorMessage = $"Lỗi từ dịch vụ: {remoteError}";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
+            // chứa tt user từ dv ngoài 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information.";
+                ErrorMessage = "Không lấy được thông tin từ dịch vụ ngoài.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -146,12 +134,91 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information during confirmation.";
+                ErrorMessage = "Lỗi lấy thông tin từ dịch vụ ngoài.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // lấy được tt từ dv ngoài 
             {
+                
+                // Input.Email
+                // tìm kiếm user đã được dki vào hệ thống bằng Email mà user đã nhập Imput.Email
+                var registeredUser = await _userManager.FindByEmailAsync(Input.Email);
+
+                string externalEmail = null; // biến lưu email từ ncc ngoài 
+                AppUser externalEmailUser = null; // lưu tt user tương ứng với email ncc ngoài
+
+                //Claim: các tt về danh tính dv ngoài cc, trong th này là email
+                // ktra tt xác thực từ dv ngoài có chứa claim loại Email ko
+                if(info.Principal.HasClaim(c => c.Type == ClaimTypes.Email)){
+                    // claim email tồn tại => lấy gtri email từ tt dv ngoài gán vào externalEmail
+                    externalEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+                }
+
+                if(externalEmail != null){ // check email dv ngoài != null ko (hợp lệ từ dv ngoài)
+                    // tìm email từ hthong -> gan vao biến externalEmailUser
+                    externalEmailUser = await _userManager.FindByEmailAsync(externalEmail);
+                }
+
+                // check user đang ki và user từ email ngoài có tồn tại ?
+                if((registeredUser != null) && (externalEmailUser != null)){
+                    // externalEmail == Input.Email
+                    // nếu 2 email trung nhau (cùng 1 người)
+                    if(registeredUser.Id == externalEmailUser.Id){
+                        // Lien ket tai khoan, dang nhap
+                        var resultLink = await _userManager.AddLoginAsync(registeredUser, info);
+                        if(resultLink.Succeeded){ // liên kết thành công 
+                            // đăng nhập user vào hệ thống sau khi lienket success
+                            await _signInManager.SignInAsync(registeredUser, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+                    }
+                    else{ // nếu email hethong != email dv ngoài
+                        // registeredUser = externaEmailUser (externalEmail != InputEmail)
+                        /*
+                            info => user1 (mail1@abc.com)
+                                 => user2 (mail2@abc.com)
+                        */
+                        ModelState.AddModelError(string.Empty, "Không liên kết được tài khoản, hãy sử dụng Email khác!");
+                        return Page();
+                    }
+                }
+                if((externalEmailUser != null) && (registeredUser == null)){
+                    ModelState.AddModelError(string.Empty, "Không hỗ trợ tài khoản mới - có email khác email từ dịch vụ ngoài");
+                }
+
+                // email dịch vụ ngoài chưa đăng kí, hệ thống cũng chưa có
+                // --> tạo tk mới và liênket luon với dv ngoài 
+                if((externalEmailUser == null) && (externalEmail == Input.Email)){
+                    // chưa có account -> tạo account, lienket, dangnhap
+                    var newUser = new AppUser(){
+                        UserName = externalEmail,
+                        Email = externalEmail
+                    };
+
+                    var resultNewUser = await _userManager.CreateAsync(newUser);
+                    if(resultNewUser.Succeeded){ // tạo user thành công
+                        // liên kết luôn với dichvu ngoai
+                        await _userManager.AddLoginAsync(newUser, info);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                        await _userManager.ConfirmEmailAsync(newUser, code);
+
+                        // cho newUser dđăng nhập ngay
+                        await _signInManager.SignInAsync(newUser, isPersistent: false);
+
+                        return LocalRedirect(returnUrl);
+                    }
+                    else{
+                        ModelState.AddModelError(string.Empty, "Không tạo được tài khoản mới!");
+                        return Page();
+                    }
+                }
+
+                return Content("Dung lai o day");
+
+
+
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

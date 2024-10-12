@@ -1,3 +1,4 @@
+//using System.Configuration;
 using System.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -66,6 +67,32 @@ builder.Services.Configure<IdentityOptions> (options => {
 //-------------------------------------------------------
 //**********************************************************
 
+// gọi dv google
+builder.Services.AddAuthentication()
+        // theem provider từ google
+        .AddGoogle(options =>{
+                var gconfig = builder.Configuration.GetSection("Authentication:Google");
+#pragma warning disable CS8601 // Possible null reference assignment.
+            options.ClientId = gconfig["ClientId"];
+#pragma warning restore CS8601 // Possible null reference assignment.
+#pragma warning disable CS8601 // Possible null reference assignment.
+            options.ClientSecret = gconfig["ClientSecret"];
+#pragma warning restore CS8601 // Possible null reference assignment.
+                              // https://localhost:5001/signin-google
+            options.CallbackPath = "/dang-nhap-tu-google";
+        })
+        // thêm provider từ FB
+         .AddFacebook(fb_options =>{
+                var fbAuthNSection = builder.Configuration.GetSection("Authentication:Facebook");
+                fb_options.AppId = fbAuthNSection["AppId"];
+                fb_options.AppSecret = fbAuthNSection["AppSecret"];
+                fb_options.CallbackPath = "/dang-nhap-tu-facebook";
+         }) 
+
+        // .AddTwitter() // thêm provider từ TW
+        // ...        
+        ;
+
 builder.Services.ConfigureApplicationCookie(options =>{
         options.LoginPath ="/login/";
         options.LogoutPath = "/logout/";
@@ -117,7 +144,9 @@ app.Run();
 
          dotnet aspnet-codegenerator identity -dc razor08.efcore.Data.ArticleContext
 
-        
+
+        CallbackPath:
+        https://localhost:5001/dang-nhap-tu-google      
 */
 
 

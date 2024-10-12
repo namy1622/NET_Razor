@@ -47,29 +47,17 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public class InputModel
         {
             [DataType(DataType.Text)]
@@ -78,29 +66,20 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
             [StringLength(100, ErrorMessage = "{0} phải từ {2} đến {1} kí tự...", MinimumLength = 5)]
             public string UserName{set; get;}
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            
             [Required(ErrorMessage = "Phải nhập {0}")]
             [EmailAddress(ErrorMessage = "Sai định dạng {0}")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+          
             [Required]
             [StringLength(100, ErrorMessage = "{0} phải ít nhất từ {2} và dài nhất {1}", MinimumLength = 2)]
             [DataType(DataType.Password)]
             [Display(Name = "Mật khẩu")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+           
             [DataType(DataType.Password)]
             [Display(Name = "Nhập lại mật khẩu")]
             [Compare("Password", ErrorMessage = "Mật khẩu lặp lại không chính xác.")]
@@ -111,11 +90,17 @@ namespace razorwebapp_sql.Areas.Identity.Pages.Account
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+            // luưu ds các provider(google, fb,...) vào ExternalLogins
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            // foreach(var provider in ExternalLogins){
+            //     _logger.LogInformation(provider.Name);
+            // }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
