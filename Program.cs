@@ -1,5 +1,6 @@
 //using System.Configuration;
 using System.Configuration;
+using App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -32,36 +33,38 @@ builder.Services.AddDbContext<ArticleContext>(options =>
 //         .AddEntityFrameworkStores<ArticleContext>()
 //        .AddDefaultTokenProviders();
 
-   builder.Services.AddIdentity<AppUser, IdentityRole>()
-        .AddEntityFrameworkStores<ArticleContext>()
-        .AddDefaultTokenProviders();    
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+     .AddEntityFrameworkStores<ArticleContext>()
+     .AddDefaultTokenProviders();
 
 //****************************************************
 //-------------------------------------------------------
 // Truy cập IdentityOptions
-builder.Services.Configure<IdentityOptions> (options => {
-    // Thiết lập về Password
-    options.Password.RequireDigit = false; // Không bắt phải có số
-    options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
-    options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
-    options.Password.RequireUppercase = false; // Không bắt buộc chữ in
-    options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
-    options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
+builder.Services.Configure<IdentityOptions>(options =>
+{       
+        
+        // Thiết lập về Password
+        options.Password.RequireDigit = false; // Không bắt phải có số
+        options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
+        options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
+        options.Password.RequireUppercase = false; // Không bắt buộc chữ in
+        options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
+        options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
 
-    // Cấu hình Lockout - khóa user
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes (5); // Khóa 5 phút
-    options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
-    options.Lockout.AllowedForNewUsers = true;
+        // Cấu hình Lockout - khóa user
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
+        options.Lockout.MaxFailedAccessAttempts = 5; // Thất bại 5 lầ thì khóa
+        options.Lockout.AllowedForNewUsers = true;
 
-    // Cấu hình về User.
-    options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;  // Email là duy nhất
+        // Cấu hình về User.
+        options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        options.User.RequireUniqueEmail = true;  // Email là duy nhất
 
-    // Cấu hình đăng nhập.
-    options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
-    options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
-    options.SignIn.RequireConfirmedAccount = true;
+        // Cấu hình đăng nhập.
+        options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
+        options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
+        options.SignIn.RequireConfirmedAccount = true;
 });
 
 //-------------------------------------------------------
@@ -70,31 +73,36 @@ builder.Services.Configure<IdentityOptions> (options => {
 // gọi dv google
 builder.Services.AddAuthentication()
         // theem provider từ google
-        .AddGoogle(options =>{
+        .AddGoogle(options =>
+        {
                 var gconfig = builder.Configuration.GetSection("Authentication:Google");
 #pragma warning disable CS8601 // Possible null reference assignment.
-            options.ClientId = gconfig["ClientId"];
+                options.ClientId = gconfig["ClientId"];
 #pragma warning restore CS8601 // Possible null reference assignment.
 #pragma warning disable CS8601 // Possible null reference assignment.
-            options.ClientSecret = gconfig["ClientSecret"];
+                options.ClientSecret = gconfig["ClientSecret"];
 #pragma warning restore CS8601 // Possible null reference assignment.
-                              // https://localhost:5001/signin-google
-            options.CallbackPath = "/dang-nhap-tu-google";
+                // https://localhost:5001/signin-google
+                options.CallbackPath = "/dang-nhap-tu-google";
         })
-        // thêm provider từ FB
-         .AddFacebook(fb_options =>{
-                var fbAuthNSection = builder.Configuration.GetSection("Authentication:Facebook");
-                fb_options.AppId = fbAuthNSection["AppId"];
-                fb_options.AppSecret = fbAuthNSection["AppSecret"];
-                fb_options.CallbackPath = "/dang-nhap-tu-facebook";
-         }) 
+         // thêm provider từ FB
+         .AddFacebook(fb_options =>
+         {
+                 var fbAuthNSection = builder.Configuration.GetSection("Authentication:Facebook");
+                 fb_options.AppId = fbAuthNSection["AppId"];
+                 fb_options.AppSecret = fbAuthNSection["AppSecret"];
+                 fb_options.CallbackPath = "/dang-nhap-tu-facebook";
+         })
 
         // .AddTwitter() // thêm provider từ TW
         // ...        
         ;
 
-builder.Services.ConfigureApplicationCookie(options =>{
-        options.LoginPath ="/login/";
+builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+        options.LoginPath = "/login/";
         options.LogoutPath = "/logout/";
         options.AccessDeniedPath = "/khongduoctruycap.html";
 });
@@ -104,9 +112,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+        app.UseExceptionHandler("/Error");
+        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+        app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -118,6 +126,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.UseEndpoints(endpoint =>
+{
+    endpoint.MapRazorPages();
+});
 
 app.Run();
 
@@ -132,6 +145,10 @@ app.Run();
         Identity:
                 -Authentication: Xác định danh tính -> login, logout,..
                 - Authorization: xác thực quyền truy cập 
+                        + Role-based authorization - xác thực quyền theo vai trò
+                        + Role(vai trò): (Admin, Editor, Manager, Member,...)
+
+                        Index, Create, Edit, Delete  (/Areas/Admin/Pages/Role)
 
                 - Quản lý user: Sign up, user, Role,... 
 
@@ -146,7 +163,11 @@ app.Run();
 
 
         CallbackPath:
-        https://localhost:5001/dang-nhap-tu-google      
+        https://localhost:5001/dang-nhap-tu-google    
+
+        --*************************--
+
+
 */
 
 
