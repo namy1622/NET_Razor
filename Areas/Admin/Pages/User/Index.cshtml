@@ -1,0 +1,41 @@
+﻿@page "/admin/member"
+@model App.Admin.User.IndexModel
+@{
+    ViewData["Title"] = "Danh sách các thành viên";
+}
+
+<h2>@ViewData["Title"]</h2>
+<hr>
+<partial name="_StatusMessage" model="@Model.StatusMessage"></partial>
+<p>Tổng thành viên: @Model.totalUser</p>
+
+<hr>
+
+
+<table class="table">
+    <tr>
+        <th>Tên User</th>
+        <th>Vai trò(role)</th>
+        <th>Tác vụ</th>
+    </tr>
+    @foreach (var user in Model.users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td></td>
+            <td>
+                <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-roleid="@user.Id">Cập nhật</a>
+                @* <a class="btn btn-success btn-sm" asp-page="./Delete" asp-route-roleid="">Xóa</a> *@
+            </td>
+        </tr>
+    }
+</table>
+@{
+    var pagingmodel = new razor_Paging.Helper.PagingModel(){
+        currentpage = Model.currentPage, 
+        countpages = Model.countPages,
+        generateUrl = (int? p ) => Url.Page("./Index", new {p = p})
+    };
+
+}
+<partial name = "_Paging" model="@pagingmodel"/>
