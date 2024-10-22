@@ -22,10 +22,17 @@
     {
         <tr>
             <td>@user.UserName</td>
-            <td></td>
+            <td>
+                @if(string.IsNullOrEmpty(user.roleName)){
+                    <a class="text-dark" asp-page="./AddRole" asp-route-id="@user.Id">+ Thêm role</a>
+                }
+                else{
+                    <a class="" asp-page="./AddRole" asp-route-id="@user.Id">@user.roleName</a>
+                }
+            </td>
             <td>
                 <a class="btn btn-success btn-sm" asp-page="./SetPassword" asp-route-id="@user.Id">Đặt mật khẩu</a>
-                <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-id="@user.Id">Thêm role</a>
+                
                 @* <a class="btn btn-success btn-sm" asp-page="./Delete" asp-route-roleid="">Xóa</a> *@
             </td>
         </tr>

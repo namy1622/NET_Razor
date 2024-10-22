@@ -161,6 +161,12 @@ app.Run();
 
          dotnet aspnet-codegenerator identity -dc razor08.efcore.Data.ArticleContext
 
+        tạo Page mới (gồm cshtml, cs)
+         dotnet new page -n Index -o Areas/Admin/Pages/Role --namespace App.Admin.Role
+
+        //
+        [Authorize] - Controller,Action, PageModel -> dang nhap
+
 
         CallbackPath:
         https://localhost:5001/dang-nhap-tu-google    

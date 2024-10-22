@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,6 +7,7 @@ using razor08.efcore.Data;
 
 namespace App.Admin.Role
 {
+    [Authorize(Roles="admin_1")]
     public class IndexModel : RolePageModel
     {
         public IndexModel(RoleManager<IdentityRole> roleManager, ArticleContext myBlogContext) : base(roleManager, myBlogContext)

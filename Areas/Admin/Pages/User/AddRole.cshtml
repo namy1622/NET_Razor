@@ -1,0 +1,31 @@
+﻿@page "/admin/assign-user-role/{id}"
+@model App.Admin.User.AddRoleModel
+@{
+    ViewData["Title"] = "Gán Role";
+}
+
+<h3>Thiết lập Role cho User: @Model.user.UserName</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="set-password-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger " role="alert"></div>
+            <div class="form-floating mb-3 ">
+                @Html.ListBoxFor(m => m.RoleNames, @Model.allRoles, new{
+                    id = "id-select-roles",
+                    @class = "form-control w-100  btn btn-lg  border-2 border-info", style = "height: 100px;"
+                })
+                <label asp-for="RoleNames" class="form-label"></label>
+                <span asp-validation-for="RoleNames" class="text-danger"></span>
+            </div>
+           
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Cập nhật</button>
+            <a asp-page="./Index" class="btn btn-primary mt-2 w-100">Danh sách thành viên</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

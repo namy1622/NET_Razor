@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,6 +8,7 @@ using razorwebapp_sql.Models;
 
 namespace App.Admin.User
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
@@ -18,8 +20,12 @@ namespace App.Admin.User
 
         [TempData]
         public string StatusMessage { set; get; } = "";
+
+        public class UserAndRole :AppUser{
+            public string roleName{set;get;}
+        }
         // danh sachs các role
-        public List<AppUser> users { set; get; }
+        public List<UserAndRole> users { set; get; }
 
         //=== Paging ===========================
         public const int ITEMS_PER_PAGE = 10;
@@ -44,9 +50,18 @@ namespace App.Admin.User
                 currentPage = countPages;
 
             var qr1 = qr.Skip((currentPage - 1) * ITEMS_PER_PAGE)
-                    .Take(ITEMS_PER_PAGE);
+                    .Take(ITEMS_PER_PAGE)
+                    .Select(u => new UserAndRole(){
+                        Id = u.Id,
+                        UserName = u.UserName,
+                    });
 
             users = await qr1.ToListAsync();
+
+            foreach(var user in users){
+                var roles = await _userManager.GetRolesAsync(user);
+                user.roleName = string.Join(",", roles);
+            }
         }
 
         public void OnPost() => RedirectToPage();  // nếu gọi theo pt http onpost thì chuyên hướng về onGet()
