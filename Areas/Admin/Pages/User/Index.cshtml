@@ -24,7 +24,8 @@
             <td>@user.UserName</td>
             <td></td>
             <td>
-                <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-roleid="@user.Id">Cập nhật</a>
+                <a class="btn btn-success btn-sm" asp-page="./SetPassword" asp-route-id="@user.Id">Đặt mật khẩu</a>
+                <a class="btn btn-success btn-sm" asp-page="./AddRole" asp-route-id="@user.Id">Thêm role</a>
                 @* <a class="btn btn-success btn-sm" asp-page="./Delete" asp-route-roleid="">Xóa</a> *@
             </td>
         </tr>
